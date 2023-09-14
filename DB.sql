@@ -43,4 +43,44 @@ SELECT EMPNO,HIREDATE,ENAME,SAL
 FROM EMP
 ORDER BY EMPNO,HIREDATE desc;
 
+--함수 저장 함수 사용자 정의 함수로 나누어짐
+--내장 함수는 단일행 함수와 다중형(집계) 함수로 나누어짐
+--DUAL 테이블 : 오라클 실습 계정에서제공하는 테이블로 함수나 계산식에서 테이블 참조없이 실행해 보기 위해 제공됨
+--ABS : 절대값을 구하는 함수 
+SELECT -10,abs(-10)FROM DUAL;
+SELECT * FROM DUAL;
+--ROUND : 반올림한 결과를 반환하는 함수 : ROUND(숫자,반올림 위치), 위치는 음수값도 줄수있음
+SELECT ROUND(1234.5678) as ROUND,
+       ROUND(1234.5678,0) as ROUND_0,
+        ROUND(1234.5678,1) as ROUND_1,
+       ROUND(1234.5678,2) as ROUND_2,
+ ROUND(1234.5678,-1) as ROUND_MINUS1,
+  ROUND(1234.5678,-2) as ROUND_MINUS2
+  FROM DUAL;
+------TRUNC 버림
+  SELECT TRUNC(1234.5678) as TRUNC,
+       TRUNC(1234.5678,0) as TRUNC_0,
+        TRUNC(1234.5678,1) as TRUNC_1,
+       TRUNC(1234.5678,2) as TRUNC_2,
+       TRUNC(1234.5678,-1) as TRUNC_MINUS1,
+        TRUNC(1234.5678,-2) as TRUNC_MINUS2
+  FROM DUAL;
+
+  -----MOD : 나누기한 나머지를 출력
+    SELECT MOD(21,5) as MOD,
+       MOD(20,9) as MOD_0       
+  FROM DUAL;
+
+---CEIL : 소수점 이하를 올림
+    SELECT CEIL(21.55511) as CEIL, 
+            CEIL(21.111111) as CEIL_1 
+  FROM DUAL;
+  ---FLOOR : 소수점 이하를 내림
+    SELECT FLOOR(21.55511) as FLOOR, 
+            FLOOR(21.111111) as FLOOR_1 
+  FROM DUAL;
+    ---POWER : 정수A 를 정수B 만큼 제곱하는 함수
+    SELECT POWER(2,4) as POWER, 
+            POWER(2,6) as POWER_1 
+  FROM DUAL;
 
