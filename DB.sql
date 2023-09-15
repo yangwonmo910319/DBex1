@@ -193,7 +193,7 @@ WHERE ENAME LIKE '%S%';
 --REPLACE : 특정 문자열 데이터에 포함된 문자를 다른 문자로 대체 할 경우 사용
 --대치할 문자를 넣지 않으면 문자 삭제
 SELECT '010-1234-5678' as REPLACE,
-REPLACE ('010-1234-5678','-','   ') as REPLACE_1, --공백으로 대체
+REPLACE ('010-1234-5678','','   ') as REPLACE_1, --공백으로 대체
 REPLACE ('010-1234-5678' ,'-')as REPLACE_2--제거
 from DUAL;
 
@@ -212,7 +212,7 @@ SELECT 'OREACL',
 
 --개인 정보를 위하여 *표시 출력
 SELECT
- RPAD('910319-',10,'*')as RA_2,
+ RPAD('910319-',1,'*')as RA_2,
   RPAD('010-',10,'*')as RA_2
   from dual;
 
@@ -340,3 +340,110 @@ FROM EMP;
 --      TO_CHAR(SYSDATE, 'HH:MI:SS P.M.') AS HHMISS_PM
 -- FROM DUAL;
 
+--TO_NUMBER() : NUMBER 타입으로 형 변환
+SELECT TO_NUMBER('1300') - '1000'
+from dual;
+
+--TO_DATE() : 날짜 타입으로 형 변환
+SELECT TO_DATE('2022/08/02','yy/mm/dd') ,
+TO_DATE('2022/08/02','yyyy/mm/dd') 
+from dual;
+
+--1981년 6월 1일 이후에 입사한 사원정보 출력
+SELECT * FROM EMP
+where HIREDATE > '01-jun-81';
+
+SELECT * FROM EMP
+where HIREDATE > TO_DATE ('19981/06/04','YYYY/MM/DD');
+
+--NULL 처리 함수 : NULL은 값이 없음, 즉 할당되지 않음을 의미
+--NULL은 0이나 공백과는 다른 의미,연산불가
+-- NVL(NULL 인자를 검사할 열,앞의 열데이터가 NULL인경우 반환할 데이터)
+
+SELECT EMPNO,ENAME,SAL,COMM,SAL+COMM,
+NVL(COMM,0),SAL+NVL(COMM,0)
+FROM EMP;
+
+--NVL2() : NULL이 아닌경우와 NULL인 경우 모두에 대해서 값을 지정 할 수 있음
+SELECT EMPNO,ENAME,COMM,
+NVL2(COMM,'o','x') as "성과금 유무",
+NVL2(COMM,SAL*12+COMM,SAL*12) as "연봉"
+FROM EMP;
+
+--NULLIF() : 두값이 동일하면 NULL 반환 아니면 첫번째 값 반환
+SELECT NULLIF(10,10),NULLIF('A','B')
+FROM DUAL;
+
+--DECODE : 주어진 데이터 값이 조건 값과 일치하는 값 출력
+--일치하는 값이 없으면 기본값 출력
+SELECT EMPNO,ENAME,JOB,SAL,
+DECODE(job,
+'MANAGER',SAL*1.1,'SALESMAN',SAL*1.2,'ANALYST',SAL,
+SAL*1.03) as 연봉협상
+FROM EMP;
+
+--CASE 문
+SELECT EMPNO,ENAME,JOB,SAL,
+CASE JOB
+       WHEN'MANAGER' THEN SAL*1.1
+        WHEN'SALESMAN' THEN SAL*1.1
+         WHEN'ANALYST' THEN SAL*1.1
+         ELSE SAL*1.03
+         END as 연봉인상 
+FROM EMP;
+
+--열 값에 따라서 출력 값이 달라지는 CASE문
+SELECT EMPNO,ENAME,
+CASE 
+WHEN comm is null THEN '해당 사항 없음'
+WHEN comm = 0 THEN'수당 없음 '
+WHEN comm > 0 THEN '없음 ' ||COMM
+ END 
+ FROM EMP;
+
+
+ SELECT EMPNO,RPAD(SUBSTR(EMPNO,1,2),4,'*')as MASKING_EMPNO,
+ ENAME,
+ RPAD(SUBSTR(ENAME,1,1),LENGTH(ENAME),'*') as MASKING_NAME
+FROM EMP 
+WHERE LENGTH(ENAME) = 5;
+
+SELECT EMPNO,ENAME,SAL,
+TRUNC( SAL/21.5,2) as일급,
+ROUND(SAL/21.5/8,1)as 시급
+FROM EMP;
+--NEXT_DAY() : 기준 일자 다음에 오는 날짜를 구하는 함수
+SELECT EMPNO,ENAME,HIREDATE,
+       TO_CHAR(NEXT_DAY(ADD_MONTHS(HIREDATE,3),'MON'),'YYYY/MM/DD')as 정직원
+      ,NVL(TO_CHAR(COMM),'N/A') as COMM
+      FROM EMP;
+
+SELECT EMPNO,ENAME,MGR,
+ CASE
+ WHEN MGR is NULL THEN'0000'
+ WHEN SUBSTR(MGE,1,2)='78' TANH '8888'
+ WHEN SUBSTR(MGE,1,2)='77' TANH '7777'
+ WHEN SUBSTR(MGE,1,2)='76' TANH '6666'
+ WHEN SUBSTR(MGE,1,2)='75' TANH '5555'
+ WHEN SUBSTR(MGE,1,2)='75' TANH '5555'
+ WHEN SUBSTR(MGE,1,2)='75' TANH '5555'
+ END
+ FROM EMP;
+
+ --다중행 함수 : 여러 형에 대해 함수가 적용되어 하나의 결과를 나타내는 함수(집게 함수)
+SELECT sum(sal)
+FROM EMP;
+SELECT sum(sal),ENAME
+FROM EMP
+group by ENAME;
+
+--GROUP By : 결과 값을 그룹 별로 묶어줌
+
+SELECT sum(sal),ENAME
+FROM EMP
+group by ENAME
+HAVING ENAME = 'FORD';
+
+SELECT DEPTNO ,SUM(SAL),COUNT(*)
+FROM EMP
+group by DEPTNO;
