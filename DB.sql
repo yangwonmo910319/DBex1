@@ -437,7 +437,7 @@ SELECT sum(sal),ENAME
 FROM EMP
 group by ENAME;
 
---GROUP By : 결과 값을 그룹 별로 묶어줌
+--GROUP By : 결과 값을 그룹 별로 묶어줌!
 
 SELECT sum(sal),ENAME
 FROM EMP
@@ -445,5 +445,5 @@ group by ENAME
 HAVING ENAME = 'FORD';
 
 SELECT DEPTNO ,SUM(SAL),COUNT(*)
-FROM EMP
+FROM emp
 group by DEPTNO;
