@@ -621,7 +621,120 @@ FROM EMP NATURAL JOIN DEPT;
 SELECT *
 FROM EMP ;
 SELECT *
+FROM DEPT ;
+SELECT *
 FROM EMP NATURAL JOIN DEPT;
 
 --JOIN ~ SUING : 등가 조인을 대신해서 사용
-SELECT
+SELECT EMPNO,ENAME,JOB,MGR,HIREDATE,DEPTNO
+FROM EMP e JOIN DEPT d USING(DEPTNO)
+ORDER BY DEPTNO;
+--JOIN ~ on : ANSI 등가 조인
+SELECT EMPNO,ENAME,JOB,MGR,HIREDATE,e.DEPTNO
+FROM EMP e JOIN DEPT d on e.DEPTNO = d.DEPTNO
+ORDER BY DEPTNO;
+
+--ANSI LEFT OUTER JOIN 
+SELECT e.ename,e.deptno,d.DNAME
+FROM EMP e LEFT OUTER JOIN DEPT D
+on  e.DEPTNO = d.DEPTNO
+ORDER by e.DEPTNO;
+--ANSI RIGHT OUTER JOIN 
+SELECT e.ename,e.deptno,d.DNAME
+FROM EMP e RIGHT OUTER JOIN DEPT D
+on  e.DEPTNO = d.DEPTNO
+ORDER by e.DEPTNO;
+
+SELECT E.EMPNO,MAX(E.SAL),min(E.SAL),avg(E.SAL),COUNT(E.ENAME)
+FROM EMP e JOIN DEPT D
+on  e.DEPTNO = d.DEPTNO
+where e.SAL > 2000
+GROUP by E.EMPNO;
+
+
+
+SELECT E.EMPNO,MAX(E.SAL),min(E.SAL),avg(E.SAL),COUNT(E.ENAME)
+FROM EMP e , DEPT D
+where e.DEPTNO = d.DEPTNO AND e.SAL > 2000
+GROUP by E.EMPNO;
+
+--서브쿼리 : 어떤 상황이나 조건에 따라 변할 수 있는 데이터 값을 비교하기 위해 SQL문 안에 
+--작성하는 작은SELECT 문을 의미
+--킹이라는 이름을 가진 사원으이 부서 이름을 찾기 위한 쿼리
+SELECT DNAME FROM DEPT
+where DEPTNO = (SELECT DEPTNO FROM EMP
+where ENAME = 'KING');
+
+SELECT * FROM EMP
+where sal > (SELECT SAL FROM EMP
+where ENAME = 'JONES');
+
+SELECT*
+FROM EMP
+where  COMM  > (
+SELECT COMM
+FROM EMP
+where ENAME = 'ALLEN');
+
+
+SELECT*
+FROM EMP
+where  TO_CHAR(HIREDATE,'yyyy/mm/dd') > (
+SELECT TO_CHAR(HIREDATE,'yyyy/mm/dd')
+FROM EMP
+where ENAME = 'JAMES');
+
+SELECT EMPNO,ENAME,JOB,sal,COMM,HIREDATE
+FROM EMP e JOIN DEPT d
+on e.DEPTNO = d.DEPTNO
+WHERE e.DEPTNO=20
+AND e.SAL > (SELECT avg(SAL) FROM EMP);
+
+--다중행 서브쿼리 : 서브쿼리의 실행 결과 행이 여러개로 나오는 서브쿼리
+--IN : 메인 쿼리의 데이터가 서브쿼리의 결과 중 하나라도 일치하면 TRUE
+SELECT *
+FROM EMP
+where SAL IN(SELECT max(SAL)
+  from EMP
+group BY DEPTNO) AND DEPTNO is not null;
+
+--ANY : 메인 쿼리의 비교 조건이 서브 쿼리의 여러 검색 결과 중 하나 이상 만족하면 변환
+SELECT *
+FROM EMP
+where SAL = any(SELECT max(SAL)
+  from EMP
+group BY DEPTNO) AND DEPTNO is not null;
+
+  SELECT EMPNO,ENAME,SAL
+FROM EMP
+where SAL > any(SELECT SAL
+  from EMP
+  where job = 'SALESMAN');
+
+SELECT *
+FROM EMP
+where SAL < ALL(SELECT SAL
+FROM EMP
+WHERE DEPTNO=30);
+
+  SELECT EMPNO,ENAME,SAL
+FROM EMP
+where SAL > all(SELECT SAL
+  from EMP
+  where job = 'MANAGER');
+
+--EXISTS 연산자 : 서브쿼리의 결과 값이 하나 이상 존재 하면 조석식이 모두 Ture, 존재하지 않으면 False
+SELECT * FROM EMP
+WHERE EXISTS(SELECT DNAME
+FROM DEPT 
+where DEPTNO = 10);
+
+--다중 열 서브 쿼리 : 서브 쿼리의 결과가 두 개 이상의 컬럼으로 반환되어 메인 쿼리에 전달하는 쿼리
+SELECT EMPNO,ENAME,SAL,DEPTNO
+FROM EMP
+where(DEPTNO,SAL) in (SELECT DEPTNO, SAL
+FROM EMP WHERE DEPTNO =30);
+
+SELECT * FROM EMP where(DEPTNO,SAL) in (SELECT DEPTNO,max(SAL)
+FROM EMP group BY DEPTNO);
+
