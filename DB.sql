@@ -482,3 +482,145 @@ where sal>=2000
  group BY DEPTNO,JOB
  ORDER by DEPTNO,JOB;
 
+--부서별 직책의 평균 급여가 500이상인 사원들의 부서,직책의 평균급여 출력
+ SELECT DEPTNO,ROUND(AVG(SAL),2),job
+ FROM EMP
+  group BY DEPTNO,JOB
+   HAVING AVG(sal)>=500
+    ORDER by DEPTNO,JOB;
+
+ SELECT DEPTNO 부서번호,ROUND(AVG(SAL),0) 평균,MIN(SAL)최저,MAX(SAL)최고
+ FROM EMP
+  group BY DEPTNO;
+
+  SELECT JOB,COUNT(ENAME)
+  FROM EMP
+   group BY JOB
+   HAVING COUNT(ENAME)>=3;
+
+  SELECT TO_CHAR(HIREDATE,'yyyy') 입사일,count(*)
+  FROM EMP
+   group BY TO_CHAR(HIREDATE,'yyyy');
+
+
+   SELECT 
+CASE 
+WHEN comm is null THEN 'x'
+WHEN comm = 0 THEN'x '
+WHEN comm > 0 THEN 'o' 
+ END as 추가수당
+ FROM EMP;
+
+ SELECT NVL2(COMM,'o','x'),COUNT(*)
+ FROM EMP
+ GROUP BY NVL2(COMM,'o','x');
+ 
+  SELECT DEPTNO,TO_CHAR(HIREDATE,'yyyy'),MAX(SAL),SUM(SAL),AVG(sal)
+  FROM EMP
+   group BY TO_CHAR(HIREDATE,'yyyy'),DEPTNO
+   order by TO_CHAR(HIREDATE,'yyyy');
+
+   SELECT * FROM EMP;
+
+   --조인 : 두개 이상의 테이블에서 데이터를 가져와 연결하는데 사용
+   --RDMS 에서 테이블 설계시 무결성 원칙으로 인해 동일한 정보가 여러군데 존재하면 안되기 떄문에
+   --필연적으로 테이블을 관리 목적에 맞게 설계
+
+   SELECT * FROM DEPT;
+   SELECT * 
+   FROM DEPT d ,EMP e
+   WHERE d.DEPTNO = e.DEPTNO;
+
+   SELECT COUNT(*),E.DEPTNO
+   FROM DEPT d ,EMP e
+   WHERE d.DEPTNO = e.DEPTNO
+   group by e.DEPTNO;
+--조인 종류 : 두 개 이상의 테이블을 하나의 테이블처럼 가로로 늘려서 출력하기 위해 사용
+--조인은 대상 데이터를 어떻게 연결하느냐에 따라 등가,비등가,자체,외부 조인으로 구분
+--등가 조인 : 테이블을 연결한 후 출력 행을 각 테이블의 특정 열에 이치한 데이터를 기준으로 서점하는 방법
+--등가 조인에는 안시(ANSI) 조인과 오라클 조인이 있음
+
+
+---ANSI 조인
+SELECT EMPNO,ENAME,E.DEPTNO,DNAME,LOC
+FROM EMP e JOIN DEPT d
+ON e.DEPTNO = d.DEPTNO
+WHERE d.DEPTNO=10
+order by d.DEPTNO;
+   
+  --오라클 조인
+   --동등 조인,이너 조인--
+   SELECT EMPNO,ENAME,E.DEPTNO,DNAME,LOC
+FROM DEPT d,EMP E
+where e.DEPTNO = d.DEPTNO
+AND d.DEPTNO=10
+order by d.DEPTNO;
+
+   
+   SELECT EMPNO,ENAME,E.DEPTNO,DNAME,LOC
+FROM DEPT d,EMP E
+where e.DEPTNO = d.DEPTNO
+AND E.SAL>=3000
+order by d.DEPTNO;
+
+SELECT*
+FROM DEPT d,EMP E
+where e.DEPTNO = d.DEPTNO
+AND E.SAL<=2500 AND E.EMPNO<=9999;
+
+---ANSI 조인
+SELECT*
+FROM DEPT d JOIN EMP E
+on e.DEPTNO = d.DEPTNO
+where E.SAL<=2500 AND E.EMPNO<=9999;
+
+--비등가 조인 : 동일 컬럼(열,레코드)가 없이 다른 조건을 사용하여 조인 할 때 사용
+SELECT* FROM EMP;
+SELECT* FROM SALGRADE;
+
+SELECT e.ENAME,e.SAL ,s.GRADE
+FROM EMP e,SALGRADE S
+where e.SAL BETWEEN s.LOSAL and s.HISAL;  --비등가 조인
+--ANSI 조인으로~
+SELECT  ENAME,SAL ,GRADE
+FROM SALGRADE s JOIN EMP E
+on E.SAL BETWEEN LOSAL and HISAL;
+
+--자체 조인 : SELF 조인- 같은 테이블을 두 번 사용하여 자체 조인
+-- ENP 테이블에서 직송상관의 사원번호는 MGR에 있음
+-- MRG를 이용해서 상관의 이름을 알아내기 위해서 사용할 수 있음
+SELECT * FROM EMP;
+SELECT e1.empno,e1.ename,e1.mgr,
+e2.empno as MGR_EMPNO,
+e2.ename as MGR_EMPNO
+FROM EMP E1,EMP e2
+where e1.MGR = e2.EMPNO;
+
+--외부 조인 : 동등 조인의 경우 한쪽의 갈럼이 없으면 해당 행으로 표시되지 않음
+--외부 조인은 내부 조인과 다르게 다른 한쪽에 값이 없어도 출력 됨
+--외부 조인은 동등 조인 조건을 만족하지 못해 누락되는 행을 출력하기 위해 사용
+
+INSERT  INTO EMP (EMPNO,ENAME,JOB,MGR,HIREDATE,SAL,COMM,DEPTNO)
+VALUES(9000,'장원영','SALESMAN',7698,SYSDATE,2000,1000,NULL);
+
+--외쪽기준 외부 조인 사용하기
+SELECT ENAME,e.DEPTNO,d.DNAME
+FROM EMP e , DEPT D
+where e.DEPTNO = d.DEPTNO(+)
+ORDER by e.DEPTNO;
+--오른쪽 기준 외부 조인
+SELECT e.ename,e.deptno,d.DNAME
+FROM EMP e,DEPT D
+where e.DEPTNO(+) = d.DEPTNO
+ORDER by e.DEPTNO;
+
+--SQL-99 표준문법으로 배우는 ANSI 조인
+--NATURAL JOIN : 등가 조인 대신 사용,자동으로 같은 열을 찾아서 조인 해줌
+SELECT EMPNO,ENAME,DNAME
+FROM EMP NATURAL JOIN DEPT;
+SELECT *
+FROM EMP ;
+SELECT *
+FROM EMP NATURAL JOIN DEPT;
+
+--JOIN ~ SUING : 등가 조인을 대신해서 사용
