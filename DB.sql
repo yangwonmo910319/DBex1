@@ -447,3 +447,38 @@ HAVING ENAME = 'FORD';
 SELECT DEPTNO ,SUM(SAL),COUNT(*)
 FROM emp
 group by DEPTNO;
+
+SELECT count(*),JOB FROM EMP 
+group BY JOB;
+
+SELECT round(AVG(sal))
+from emp
+group BY JOB
+order by round(AVG(sal));
+
+SELECT avg(sal) FROM EMP where deptno=10
+union ALL
+SELECT avg(sal) FROM EMP where deptno=20
+union ALL
+SELECT avg(sal) FROM EMP where deptno=30;
+
+SELECT DEPTNO 부서코드,
+ sum(sal) 합계,
+ ROUND(AVG(SAL),2) 평균,
+ COUNT(*) 인원수
+ FROM emp
+ group BY DEPTNO
+ ORDER by DEPTNO;
+
+ SELECT DEPTNO , JOB, ROUND(AVG(SAL),2)
+ FROM emp
+ group BY DEPTNO,JOB
+ HAVING AVG(sal)>=2000
+ ORDER by DEPTNO,JOB;
+
+  SELECT DEPTNO , JOB, ROUND(AVG(SAL),2)
+ FROM emp
+where sal>=2000
+ group BY DEPTNO,JOB
+ ORDER by DEPTNO,JOB;
+
