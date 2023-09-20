@@ -482,7 +482,7 @@ where sal>=2000
  group BY DEPTNO,JOB
  ORDER by DEPTNO,JOB;
 
---부서별 직책의 평균 급여가 500이상인 사원들의 부서,직책의 평균급여 출력
+--부서별 직책의 평균 급여가 500이상인 사원들의 부서,직책의 평균급여 출력!
  SELECT DEPTNO,ROUND(AVG(SAL),2),job
  FROM EMP
   group BY DEPTNO,JOB
@@ -500,7 +500,8 @@ where sal>=2000
 
   SELECT TO_CHAR(HIREDATE,'yyyy') 입사일,count(*)
   FROM EMP
-   group BY TO_CHAR(HIREDATE,'yyyy');
+  where TO_CHAR(HIREDATE,'yyyy')<SYSDATE;
+
 
 
    SELECT 
