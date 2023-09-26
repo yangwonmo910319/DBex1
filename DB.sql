@@ -1,5 +1,6 @@
 SELECT * FROM EMP 
 SELECT * FROM EMP 
+SELECT * FROM EMP 
 WHERE JOB in ('MANAGER','CLERK') and
 COMM is null and ename  LIKE '_L%'  ;
 
